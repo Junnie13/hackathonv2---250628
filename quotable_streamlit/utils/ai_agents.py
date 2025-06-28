@@ -15,12 +15,12 @@ Analyze this lead and return a JSON response:
 Lead: {name}, {title}, {company}, {location}
 
 Return:
-{
+{{
     "decision_maker_score": 0.0-1.0,
     "industry_relevance": 0.0-1.0,
     "overall_quality": "High/Medium/Low",
     "reasoning": "brief explanation"
-}
+}}
 """
 
 CAMPAIGN_GEN_PROMPT = """
