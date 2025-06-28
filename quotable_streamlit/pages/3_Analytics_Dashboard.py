@@ -4,6 +4,11 @@ import plotly.express as px
 from utils.mock_data import load_mock_campaigns
 
 st.markdown("## 📊 Performance Intelligence Dashboard")
+# Campaign progress & actionable insights
+sent = st.session_state.get('sent_count', 0)
+st.markdown(f"**📨 Emails Sent:** {sent}")
+st.markdown("### 💡 Actionable Insights")
+st.info("Demo: Consider re-engaging leads with low click rates using follow-up email.")
 
 # Load mock campaign data
 campaigns = load_mock_campaigns()

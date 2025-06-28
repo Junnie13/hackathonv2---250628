@@ -5,6 +5,26 @@ from utils.ai_agents import ai_qualify_lead
 
 st.markdown("## 🔍 Intelligent Lead Discovery")
 
+# Lead guidance input (RAG placeholder)
+lead_description = st.text_area(
+    "Lead Search Guide",
+    value=st.session_state.get("lead_description", ""),
+    height=100,
+    help="Describe criteria for leads (demo placeholder)"
+)
+st.session_state['lead_description'] = lead_description
+guide_file = st.file_uploader(
+    "📄 Upload Guide Document",
+    type=['txt','pdf'],
+    help="Optional demo placeholder for guide"
+)
+if guide_file:
+    st.session_state['lead_guide'] = guide_file.read()
+elif 'lead_guide' not in st.session_state:
+    st.session_state['lead_guide'] = None
+if lead_description:
+    st.success("Lead guidance received (demo).")
+
 # File upload or sample data
 uploaded_file = st.file_uploader("📁 Upload Lead Data (CSV)", type=['csv'])
 if uploaded_file:

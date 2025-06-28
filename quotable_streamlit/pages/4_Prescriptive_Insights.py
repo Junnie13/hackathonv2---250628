@@ -39,3 +39,9 @@ if strategy:
         st.write(f"- {strat}")
 else:
     st.write("No strategy suggestions available.")
+
+# Import insights to lead generation (demo placeholder)
+if st.button("🔄 Use Insights to Restart Campaign"):
+    steps = insights.get("recommendations", []) + insights.get("strategy", [])
+    st.session_state['lead_description'] = "\n".join(steps)
+    st.success("✅ Insights imported to Lead Generation tab (demo).")
