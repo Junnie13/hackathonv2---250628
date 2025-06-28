@@ -44,6 +44,7 @@ def ai_qualify_lead(lead: dict) -> dict:
     """
     Call OpenAI to evaluate a single lead.
     """
+    openai.api_key = os.getenv("OPENAI_API_KEY")
     prompt = LEAD_EVAL_PROMPT.format(**lead)
     response = openai.ChatCompletion.create(
         model="gpt-4",
@@ -66,6 +67,7 @@ Return a JSON object with keys: root_causes (list), recommendations (list), stra
 """
 
 def generate_insights(campaigns: list) -> dict:
+    openai.api_key = os.getenv("OPENAI_API_KEY")
     prompt = INSIGHTS_PROMPT + "\nCampaigns: " + json.dumps(campaigns)
     response = openai.ChatCompletion.create(
         model="gpt-4",
@@ -82,6 +84,7 @@ def generate_campaign(lead: dict, culture_notes: str = "Auto-detect") -> dict:
     """
     Call OpenAI to generate a campaign email for a single lead.
     """
+    openai.api_key = os.getenv("OPENAI_API_KEY")
     prompt = CAMPAIGN_GEN_PROMPT.format(culture_notes=culture_notes, **lead)
     response = openai.ChatCompletion.create(
         model="gpt-4",

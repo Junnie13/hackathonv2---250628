@@ -71,6 +71,18 @@ if 'qualified_leads' not in st.session_state:
 if 'campaigns' not in st.session_state:
     st.session_state.campaigns = []
 
+# OpenAI API key input
+api_input = st.sidebar.text_input(
+    "🔑 OpenAI API Key",
+    value=st.session_state.get("OPENAI_API_KEY", ""),
+    type="password",
+    help="Paste your OpenAI API key here"
+)
+if api_input:
+    import os
+    os.environ["OPENAI_API_KEY"] = api_input
+    st.session_state["OPENAI_API_KEY"] = api_input
+
 # App header
 st.markdown("""
 <div style="text-align: center; padding: 2rem 0;">
