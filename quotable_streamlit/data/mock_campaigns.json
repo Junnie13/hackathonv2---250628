@@ -1,0 +1,22 @@
+[
+  {
+    "campaign_id": "camp_001",
+    "sent_date": "2024-06-15",
+    "leads_contacted": 50,
+    "open_rate": 0.24,
+    "click_rate": 0.08,
+    "response_rate": 0.04,
+    "geography": "Singapore",
+    "cultural_tone": "formal"
+  },
+  {
+    "campaign_id": "camp_002",
+    "sent_date": "2024-06-16",
+    "leads_contacted": 60,
+    "open_rate": 0.19,
+    "click_rate": 0.06,
+    "response_rate": 0.03,
+    "geography": "Mexico City",
+    "cultural_tone": "warm"
+  }
+]
