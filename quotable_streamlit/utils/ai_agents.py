@@ -2,8 +2,8 @@ import os
 import json
 from dotenv import load_dotenv
 from openai import OpenAI
+import re
 
-# Load environment variables and initialize client
 load_dotenv()
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
@@ -15,12 +15,12 @@ Analyze this lead and return a JSON response:
 Lead: {name}, {title}, {company}, {location}
 
 Return:
-{{
+{
     "decision_maker_score": 0.0-1.0,
     "industry_relevance": 0.0-1.0,
     "overall_quality": "High/Medium/Low",
     "reasoning": "brief explanation"
-}}
+}
 """
 
 CAMPAIGN_GEN_PROMPT = """
@@ -40,6 +40,32 @@ Create a professional outreach email with:
 Format as JSON with subject and body fields.
 """
 
+INSIGHTS_PROMPT = """
+You are an AI performance analyst. Given campaign performance data, provide:
+- Root cause analysis of performance issues
+- Improvement recommendations
+- Next campaign strategy suggestions
+Return a JSON object with keys: root_causes (list), recommendations (list), strategy (list).
+"""
+
+def _parse_response(content: str) -> dict:
+    """
+    Attempt to load JSON directly, else extract JSON snippet.
+    Falls back to empty dict on failure.
+    """
+    try:
+        return json.loads(content)
+    except json.JSONDecodeError:
+        start = content.find("{")
+        end = content.rfind("}")
+        if start != -1 and end != -1:
+            snippet = content[start:end+1]
+            try:
+                return json.loads(snippet)
+            except json.JSONDecodeError:
+                return {}
+    return {}
+
 def ai_qualify_lead(lead: dict) -> dict:
     """
     Call OpenAI to evaluate a single lead.
@@ -54,29 +80,7 @@ def ai_qualify_lead(lead: dict) -> dict:
         temperature=0
     )
     content = response.choices[0].message.content
-    return json.loads(content)
-
-# Prescriptive insights prompt and generator
-INSIGHTS_PROMPT = """
-You are an AI performance analyst. Given campaign performance data, provide:
-- Root cause analysis of performance issues
-- Improvement recommendations
-- Next campaign strategy suggestions
-Return a JSON object with keys: root_causes (list), recommendations (list), strategy (list).
-"""
-
-def generate_insights(campaigns: list) -> dict:
-    prompt = INSIGHTS_PROMPT + "\nCampaigns: " + json.dumps(campaigns)
-    response = client.chat.completions.create(
-        model="gpt-4",
-        messages=[
-            {"role": "system", "content": "You are an AI performance analyst."},
-            {"role": "user", "content": prompt}
-        ],
-        temperature=0.7
-    )
-    content = response.choices[0].message.content
-    return json.loads(content)
+    return _parse_response(content)
 
 def generate_campaign(lead: dict, culture_notes: str = "Auto-detect") -> dict:
     """
@@ -92,4 +96,20 @@ def generate_campaign(lead: dict, culture_notes: str = "Auto-detect") -> dict:
         temperature=0.7
     )
     content = response.choices[0].message.content
-    return json.loads(content)
+    return _parse_response(content)
+
+def generate_insights(campaigns: list) -> dict:
+    """
+    Call OpenAI to provide prescriptive insights on campaigns.
+    """
+    prompt = INSIGHTS_PROMPT + "\nCampaigns: " + json.dumps(campaigns)
+    response = client.chat.completions.create(
+        model="gpt-4",
+        messages=[
+            {"role": "system", "content": "You are an AI performance analyst."},
+            {"role": "user", "content": prompt}
+        ],
+        temperature=0.7
+    )
+    content = response.choices[0].message.content
+    return _parse_response(content)

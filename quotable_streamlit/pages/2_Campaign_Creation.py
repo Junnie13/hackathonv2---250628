@@ -22,7 +22,14 @@ if st.button("✉️ Generate Campaigns"):
     campaigns = []
     for key in selected_keys:
         lead = options[key]
-        campaign = generate_campaign(lead, culture)
+        try:
+            campaign = generate_campaign(lead, culture)
+        except Exception as e:
+            st.error(f"Error generating campaign for {lead.get('name','unknown')}: {e}")
+            continue
+        if not isinstance(campaign, dict):
+            st.error(f"Invalid AI response for {lead.get('name','unknown')}")
+            continue
         campaign_record = {
             "name": lead['name'],
             "company": lead['company'],
