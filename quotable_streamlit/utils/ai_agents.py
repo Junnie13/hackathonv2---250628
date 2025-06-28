@@ -1,11 +1,11 @@
 import os
 import json
 from dotenv import load_dotenv
-import openai
+from openai import OpenAI
 
-# Load environment variables
+# Load environment variables and initialize client
 load_dotenv()
-openai.api_key = os.getenv("OPENAI_API_KEY")
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 # Prompts from PRD
 LEAD_EVAL_PROMPT = """
@@ -44,9 +44,8 @@ def ai_qualify_lead(lead: dict) -> dict:
     """
     Call OpenAI to evaluate a single lead.
     """
-    openai.api_key = os.getenv("OPENAI_API_KEY")
     prompt = LEAD_EVAL_PROMPT.format(**lead)
-    response = openai.ChatCompletion.create(
+    response = client.chat.completions.create(
         model="gpt-4",
         messages=[
             {"role": "system", "content": "You are an AI lead evaluator."},
@@ -67,9 +66,8 @@ Return a JSON object with keys: root_causes (list), recommendations (list), stra
 """
 
 def generate_insights(campaigns: list) -> dict:
-    openai.api_key = os.getenv("OPENAI_API_KEY")
     prompt = INSIGHTS_PROMPT + "\nCampaigns: " + json.dumps(campaigns)
-    response = openai.ChatCompletion.create(
+    response = client.chat.completions.create(
         model="gpt-4",
         messages=[
             {"role": "system", "content": "You are an AI performance analyst."},
@@ -84,9 +82,8 @@ def generate_campaign(lead: dict, culture_notes: str = "Auto-detect") -> dict:
     """
     Call OpenAI to generate a campaign email for a single lead.
     """
-    openai.api_key = os.getenv("OPENAI_API_KEY")
     prompt = CAMPAIGN_GEN_PROMPT.format(culture_notes=culture_notes, **lead)
-    response = openai.ChatCompletion.create(
+    response = client.chat.completions.create(
         model="gpt-4",
         messages=[
             {"role": "system", "content": "You are an AI campaign generator."},
